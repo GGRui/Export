@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.itcast.dao.system.RoleDao">
+    <resultMap id="BaseResultMap" type="cn.itcast.domain.system.Role">
+        <id column="role_id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="remark" property="remark"/>
+        <result column="order_no" property="orderNo"/>
+        <result column="company_id" property="companyId"/>
+        <result column="company_name" property="companyName"/>
+    </resultMap>
+
+    <!--根据id查询-->
+    <select id="findById" resultMap="BaseResultMap" parameterType="java.lang.String">
+        SELECT * FROM pe_role WHERE role_id=#{id}
+    </select>
+
+    <!--查询全部-->
+    <select id="findAll" resultMap="BaseResultMap">
+        SELECT * FROM pe_role WHERE company_id=#{companyId}
+    </select>
+
+    <!--根据id删除-->
+    <delete id="delete">
+        DELETE FROM pe_role WHERE role_id=#{id}
+    </delete>
+
+    <!--添加-->
+    <insert id="save">
+        INSERT INTO pe_role
+        (
+            role_id,
+            name,
+            remark,
+            order_no,
+            company_id,
+            company_name
+        )VALUES (
+          #{id},
+          #{name},
+          #{remark},
+          #{orderNo},
+          #{companyId},
+          #{companyName})
+    </insert>
+
+    <!--更新-->
+    <update id="update">
+        update pe_role
+        set name = #{name},
+          remark = #{remark},
+          order_no = #{orderNo}
+        where role_id = #{id}
+    </update>
+
+    <!--根据角色id删除中间表中的数据-->
+    <delete id="deleteRoleModule">
+        delete from pe_role_module where role_id=#{roleId}
+    </delete>
+
+    <!--向角色模块中间表中保存数据。 #{arg0} 对应接口方法形参的第一个参数。-->
+    <insert id="saveRoleModule">
+        insert into pe_role_module(role_id,module_id) values (#{arg0},#{arg1})
+    </insert>
+
+    <!--根据用户id查询所有角色-->
+    <select id="findUserRole" resultMap="BaseResultMap">
+        SELECT r.* FROM pe_role r, pe_role_user ru WHERE r.role_id = ru.role_id AND ru.user_id=#{userId}
+    </select>
+</mapper>

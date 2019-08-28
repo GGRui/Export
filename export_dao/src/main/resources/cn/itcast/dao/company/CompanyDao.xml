@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<!--namespace 指定对哪个接口文件进行映射-->
+<mapper namespace="cn.itcast.dao.company.CompanyDao">
+
+    <!--指定查询结果与对象属性的映射关系 (ctrl + alt + L 格式化；  alt+选中多行)-->
+    <resultMap id="BaseResultMap" type="cn.itcast.domain.company.Company">
+        <result column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column=" expiration_date" property="expirationDate"/>
+        <result column="address" property="address"/>
+        <result column="license_id" property="licenseId"/>
+        <result column="representative" property="representative"/>
+        <result column="phone" property="phone"/>
+        <result column="company_size" property="companySize"/>
+        <result column="industry" property="industry"/>
+        <result column="remarks" property="remarks"/>
+        <result column="city" property="city"/>
+        <result column="balance" property="balance"/>
+    </resultMap>
+
+    <!--查询所有企业-->
+    <select id="findAll" resultMap="BaseResultMap">
+        SELECT * FROM ss_company
+    </select>
+
+    <!--保存企业-->
+    <insert id="save" parameterType="cn.itcast.domain.company.Company">
+        INSERT into ss_company
+        (
+        id,
+        name,
+        expiration_date,
+        address,
+        license_id,
+        representative,
+        phone,
+        company_size,
+        industry,
+        remarks,
+        state,
+        balance,
+        city
+        )VALUES
+        (
+        #{id},
+        #{name},
+        #{expirationDate},
+        #{address},
+        #{licenseId},
+        #{representative},
+        #{phone},
+        #{companySize},
+        #{industry},
+        #{remarks},
+        #{state},
+        #{balance},
+        #{city}
+        )
+    </insert>
+    <!--根据id查询-->
+    <select id="findById" resultMap="BaseResultMap" parameterType="string">
+        SELECT * FROM ss_company WHERE id=#{id}
+    </select>
+
+    <!--更新-->
+    <update id="update" parameterType="cn.itcast.domain.company.Company">
+        UPDATE ss_company
+        SET
+            name=#{name},
+            expiration_date=#{expirationDate},
+            address=#{address},
+            license_id=#{licenseId},
+            representative=#{representative},
+            phone=#{phone},
+            company_size=#{companySize},
+            industry=#{industry},
+            remarks=#{remarks},
+            state=#{state},
+            balance=#{balance},
+            city=#{city}
+        WHERE id=#{id}
+    </update>
+
+    <!--根据id删除-->
+    <select id="delete" parameterType="string">
+        DELETE from ss_company WHERE id=#{id}
+    </select>
+</mapper>

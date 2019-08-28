@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <description>spring整合shiro配置</description>
+    <!--1.配置shiro工厂-->
+    <!--注意：id固定不变，不能更改，是匹配web.xml中的filter-name过滤器-->
+    <bean id="shiroFilter" class="org.apache.shiro.spring.web.ShiroFilterFactoryBean">
+        <!--1.1注入shiro最核心对象，安全管理器-->
+        <property name="securityManager" ref="securityManager"/>
+        <!--1.2注入一些参数-->
+        <!--A.认证时候自动跳转到登录页面路径-->
+        <property name="loginUrl" value="/login.jsp"/>
+        <!--B.认证成功后跳转到页面路径：如果认证成功程序中有指定跳转页面以程序指定为主-->
+        <property name="successUrl" value="/home.jsp"/>
+        <!--C.授权访问失败，默认跳转的页面-->
+        <property name="unauthorizedUrl" value="/unauthorized.jsp"/>
+        <!--1.3注入shiro的过滤器（执行链）-->
+        <!--
+            anon:匿名访问过滤器，指定放行的资源
+            authc：认证过滤器
+            perms：授权校验过滤器
+            举例：
+            /login.jsp* = anon 访问login.jsp或login.jsp?username-aa就直接放行
+            /css/** = anon 访问/css路径及其其下所有子孙路径的资源放行
+            /**-authc  其他所有资源的都需要认证
+        -->
+        <property name="filterChainDefinitions">
+            <value>
+                /login.jsp* = anon
+                /login* = anon
+                /css/** = anon
+                /img/** = anon
+                /make/** = anon
+                /plugins/** = anon
+                <!--/system/user/list.do = perms["用户管理"]-->
+                /** = authc
+            </value>
+        </property>
+    </bean>
+
+    <!--2.配置安全管理器-->
+    <bean id="securityManager" class="org.apache.shiro.web.mgt.DefaultWebSecurityManager">
+        <!--引用自定义的realm-->
+        <property name="realm" ref="authRealm"/>
+    </bean>
+    <!--3.配置自定义realm域-->
+    <bean id="authRealm" class="cn.itcast.web.shiro.AuthRealm">
+        <!--注入凭证匹配器-->
+        <property name="credentialsMatcher" ref="credentialsMatcher"></property>
+    </bean>
+
+    <!--4.创建shiro提供的凭证匹配器，自动对用用户输入的密码按照指定算法加密-->
+    <!--<bean id="credentialsMatcher" class="org.apache.shiro.authc.credential.HashedCredentialsMatcher">
+        <property name="hashAlgorithmName" value="md5"/>
+    </bean>-->
+    <bean id="credentialsMatcher" class="cn.itcast.web.shiro.CustomCredentialsMatcher"/>
+
+    <bean id="lifecycleBeanPostProcessor" class="org.apache.shiro.spring.LifecycleBeanPostProcessor"/>
+
+    <bean class="org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator" depends-on="lifecycleBeanPostProcessor" />
+
+    <bean class="org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor">
+        <property name="securityManager" ref="securityManager"/>
+    </bean>
+
+</beans>

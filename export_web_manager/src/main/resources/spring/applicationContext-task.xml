@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <!--将定时任务类交给spring容器-->
+    <bean id="MyTask" class="cn.itcast.web.task.MyTask"></bean>
+
+    <!--配置jobDetail:配置定时执行的类和方法-->
+    <bean id="jobDetail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <property name="targetObject" ref="MyTask"/>
+        <property name="targetMethod" value="excete"/>
+    </bean>
+
+    <!--配置target：（触发器）配置时间以及jobdetail关系-->
+    <bean id="tigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <!--cron表达式-->
+        <property name="cronExpression" value="0 15 10 * * ?*"></property>
+        <property name="jobDetail" ref="jobDetail"></property>
+    </bean>
+
+    <!--配置定时任务管理器-->
+    <bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+        <property name="triggers">
+            <list>
+                <ref bean="tigger"></ref>
+            </list>
+        </property>
+    </bean>
+
+
+</beans>
